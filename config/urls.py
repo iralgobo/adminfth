@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
+    path('', include('apps.tracking.urls')),
     path('', include('apps.pages.urls')),
     path('', include('apps.dyn_dt.urls')),
     path('', include('apps.dyn_api.urls')),

@@ -1,0 +1,30 @@
+<div class="btn-group" role="group">
+
+    <!-- Botón Candles -->
+    <a href="{% url 'candle_list' config_id %}" 
+       class="btn btn-info btn-sm" 
+       title="Candles">
+        <i class="fas fa-hanukiah"></i>
+    </a>
+    
+
+    <!-- Botón Update -->
+    <a href="{% url 'tracking_configuration_update' config_id %}" 
+       class="btn btn-primary btn-sm" 
+       title="Editar configuración">
+        <i class="fas fa-edit"></i>
+    </a>
+    
+    <!-- Botón Delete -->
+    <button type="button" 
+            class="btn btn-danger btn-sm delete-config" 
+            data-id="{{ config_id }}"
+            data-name="{{ config_name }}"
+            title="Eliminar configuración">
+        <i class="fas fa-trash"></i>
+    </button>
+    
+   
+    
+    
+</div>

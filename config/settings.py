@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "django.contrib.staticfiles",
+    "django.contrib.staticfiles",    
 
     # Serve UI pages
     "apps.pages",
@@ -68,6 +68,12 @@ INSTALLED_APPS = [
     # Tooling API-GEN
     'rest_framework',            # Include DRF           # <-- NEW 
     'rest_framework.authtoken',  # Include DRF Auth      # <-- NEW   
+
+    # Agregado por mi
+    'django_extensions',
+
+    # Tracking
+    "apps.tracking",
 ]
 
 MIDDLEWARE = [
