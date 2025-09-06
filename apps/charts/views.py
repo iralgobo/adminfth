@@ -4,11 +4,8 @@ from apps.pages.models import *
 
 # Create your views here.
 
+
 def index(request):
-  products = serializers.serialize('json', Product.objects.all())
-  context = {
-    'parent': 'apps',
-    'segment': 'charts',
-    'products': products
-  }
-  return render(request, 'charts/index.html', context)
+    products = serializers.serialize("json", Product.objects.all())
+    context = {"parent": "apps", "segment": "charts", "products": products}
+    return render(request, "charts/index.html", context)

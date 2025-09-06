@@ -30,3 +30,8 @@ django-dbbackup==4.2.1
 
 #Agregado por mi
 django-extensions
+
+celery==5.5.3
+redis==6.4.0
+django-celery-beat==2.8.1
+django-celery-results==2.6.0

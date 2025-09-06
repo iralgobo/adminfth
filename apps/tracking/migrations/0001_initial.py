@@ -5,40 +5,76 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='TrackingConfiguration',
+            name="TrackingConfiguration",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('par', models.CharField(max_length=10)),
-                ('timeframe', models.CharField(choices=[('5m', '5m'), ('15m', '15m'), ('30m', '30m'), ('1h', '1h'), ('2h', '2h'), ('4h', '4h'), ('6h', '6h'), ('8h', '8h'), ('1d', '1d')], max_length=10)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("par", models.CharField(max_length=10)),
+                (
+                    "timeframe",
+                    models.CharField(
+                        choices=[
+                            ("5m", "5m"),
+                            ("15m", "15m"),
+                            ("30m", "30m"),
+                            ("1h", "1h"),
+                            ("2h", "2h"),
+                            ("4h", "4h"),
+                            ("6h", "6h"),
+                            ("8h", "8h"),
+                            ("1d", "1d"),
+                        ],
+                        max_length=10,
+                    ),
+                ),
             ],
             options={
-                'unique_together': {('par', 'timeframe')},
+                "unique_together": {("par", "timeframe")},
             },
         ),
         migrations.CreateModel(
-            name='Candle',
+            name="Candle",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('open', models.DecimalField(decimal_places=8, max_digits=20)),
-                ('close', models.DecimalField(decimal_places=8, max_digits=20)),
-                ('high', models.DecimalField(decimal_places=8, max_digits=20)),
-                ('low', models.DecimalField(decimal_places=8, max_digits=20)),
-                ('quoteVol', models.DecimalField(decimal_places=8, max_digits=20)),
-                ('baseVol', models.DecimalField(decimal_places=8, max_digits=20)),
-                ('timestamp', models.BigIntegerField()),
-                ('time', models.DateTimeField()),
-                ('tracking_configuration', models.ForeignKey(on_delete=django.db.models.deletion.RESTRICT, to='tracking.trackingconfiguration')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("open", models.DecimalField(decimal_places=8, max_digits=20)),
+                ("close", models.DecimalField(decimal_places=8, max_digits=20)),
+                ("high", models.DecimalField(decimal_places=8, max_digits=20)),
+                ("low", models.DecimalField(decimal_places=8, max_digits=20)),
+                ("quoteVol", models.DecimalField(decimal_places=8, max_digits=20)),
+                ("baseVol", models.DecimalField(decimal_places=8, max_digits=20)),
+                ("timestamp", models.BigIntegerField()),
+                ("time", models.DateTimeField()),
+                (
+                    "tracking_configuration",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.RESTRICT,
+                        to="tracking.trackingconfiguration",
+                    ),
+                ),
             ],
             options={
-                'unique_together': {('tracking_configuration', 'timestamp')},
+                "unique_together": {("tracking_configuration", "timestamp")},
             },
         ),
     ]
