@@ -1,0 +1,172 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Resultados Backtest - Trading System{% endblock %}
+{% block page_title %}Resultados: {{ backtest.strategy.name }}{% endblock %}
+
+{% block content %}
+<!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+<div class="row">
+    <div class="col-md-6">
+        <div class="card card-info">
+            <div class="card-header">
+                <h3 class="card-title">Resumen del Backtest</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Par:</strong> {{ backtest.tracking_config.par }}<br>
+                        <strong>Timeframe:</strong> {{ backtest.tracking_config.timeframe }}<br>
+                        <strong>Período:</strong> {{ backtest.start_date|date:"Y-m-d" }} - {{ backtest.end_date|date:"Y-m-d" }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Balance Inicial:</strong> ${{ backtest.initial_balance }}<br>
+                        <strong>Balance Final:</strong> ${{ result.final_balance|floatformat:2 }}<br>
+                        <strong>Retorno Total:</strong> 
+                        <span class="badge badge-{% if result.total_return > 0 %}success{% else %}danger{% endif %}">
+                            {{ result.total_return|floatformat:2 }}%
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card card-success">
+            <div class="card-header">
+                <h3 class="card-title">Métricas de Performance</h3>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="small-box bg-info">
+                            <div class="inner">
+                                <h3>{{ result.total_trades }}</h3>
+                                <p>Total Trades</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="small-box bg-{% if result.total_return > 0 %}success{% else %}danger{% endif %}">
+                            <div class="inner">
+                                <h3>{{ result.total_return|floatformat:2 }}%</h3>
+                                <p>Retorno</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="small-box bg-warning">
+                            <div class="inner">
+                                <h3>{{ result.sharpe_ratio|default:"N/A" }}</h3>
+                                <p>Sharpe Ratio</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-balance-scale"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title">Equity Curve</h3>
+            </div>
+            <div class="card-body">
+                <canvas id="equityChart" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Detalle de Trades</h3>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Acción</th>
+                            <th>Precio</th>
+                            <th>Cantidad</th>
+                            <th>Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for trade in result.trades_data %}
+                        <tr>
+                            <td>{{ trade.timestamp }}</td>
+                            <td>
+                                <span class="badge badge-{% if trade.action == 'BUY' %}success{% else %}danger{% endif %}">
+                                    {{ trade.action }}
+                                </span>
+                            </td>
+                            <td>${{ trade.price|floatformat:4 }}</td>
+                            <td>{{ trade.quantity|floatformat:6 }}</td>
+                            <td>${{ trade.balance_after|floatformat:2 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+      <!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Gráfica de Equity Curve
+const equityData = {{ equity_data|safe }};
+const ctx = document.getElementById('equityChart').getContext('2d');
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        datasets: [{
+            label: 'Equity',
+            data: equityData,
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1,
+            fill: false
+        }]
+    },
+    options: {
+        scales: {
+            x: {
+                type: 'time',
+                time: {
+                    unit: 'day'
+                }
+            },
+            y: {
+                beginAtZero: false
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Backtests - Trading System{% endblock %}
+{% block page_title %}Backtests Realizados{% endblock %}
+
+{% block content %}
+ <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Historial de Backtests</h3>
+                <div class="card-tools">
+                    <a href="{% url 'backtest_create' %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Nuevo Backtest
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Estrategia</th>
+                            <th>Par</th>
+                            <th>Timeframe</th>
+                            <th>Balance Inicial</th>
+                            <th>Período</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for backtest in backtests %}
+                        <tr>
+                            <td>{{ backtest.strategy.name }}</td>
+                            <td>{{ backtest.tracking_config.par }}</td>
+                            <td>{{ backtest.tracking_config.timeframe }}</td>
+                            <td>${{ backtest.initial_balance }}</td>
+                            <td>{{ backtest.start_date|date:"Y-m-d" }} - {{ backtest.end_date|date:"Y-m-d" }}</td>
+                            <td>
+                                <span class="badge badge-{% if backtest.status == 'completed' %}success{% elif backtest.status == 'running' %}warning{% else %}danger{% endif %}">
+                                    {{ backtest.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{% url 'backtest_detail' backtest.id %}" class="btn btn-info btn-sm">
+                                    <i class="fas fa-eye"></i> Ver
+                                </a>
+                                <form action="{% url 'backtest_delete' backtest.id %}" method="post" style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar este backtest?')">
+                                        <i class="fas fa-trash"></i> Eliminar
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No hay backtests realizados</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+  </div>
+      <!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+{% endblock %}

@@ -1,8 +1,9 @@
 from django.db import models
 
+from config.models import TimeStampedModel
 
 # Create your models here.
-class TrackingConfiguration(models.Model):
+class TrackingConfiguration(TimeStampedModel):
     """
     Represents a tracking configuration for a given par and timeframe
     """
@@ -29,7 +30,7 @@ class TrackingConfiguration(models.Model):
         return f"{self.par} - {self.timeframe}"
 
 
-class Candle(models.Model):
+class Candle(TimeStampedModel):
     """
     Represents a candle with open, close, high, low prices and volumes
     """

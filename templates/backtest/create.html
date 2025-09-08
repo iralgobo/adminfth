@@ -1,0 +1,119 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %}Nuevo Backtest - Trading System{% endblock %}
+{% block page_title %}Nuevo Backtest{% endblock %}
+
+{% block content %}
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+<div class="row">
+    <div class="col-md-8">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title">Configuración del Backtest</h3>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <div class="card-body">
+                    {% if error %}
+                    <div class="alert alert-danger">
+                        <i class="icon fas fa-exclamation-triangle"></i>
+                        {{ error }}
+                    </div>
+                    {% endif %}
+
+                    <div class="form-group">
+                        <label>Estrategia</label>
+                        <select name="strategy" class="form-control" required>
+                            <option value="">Seleccionar estrategia</option>
+                            {% for strategy in strategies %}
+                            <option value="{{ strategy.id }}">{{ strategy.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Par y Timeframe</label>
+                        <select name="tracking_config" class="form-control" required>
+                            <option value="">Seleccionar par</option>
+                            {% for config in tracking_configs %}
+                            <option value="{{ config.id }}">
+                                {{ config.par }} - {{ config.timeframe }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Balance Inicial (USDT)</label>
+                                <input type="number" name="initial_balance" class="form-control" value="1000" step="0.01" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Fecha Inicio</label>
+                                <input type="date" name="start_date" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Fecha Fin</label>
+                                <input type="date" name="end_date" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="parameters-section" style="display: none;">
+                        <h4>Parámetros de la Estrategia</h4>
+                        <div id="parameters-container"></div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Ejecutar Backtest
+                    </button>
+                    <a href="{% url 'backtest_list' %}" class="btn btn-default">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+  </div>
+      <!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Actualizar parámetros cuando se selecciona una estrategia
+$('select[name="strategy"]').change(function() {
+    const strategyId = $(this).val();
+    if (strategyId) {
+        // Aquí cargarías los parámetros específicos de la estrategia via AJAX
+        // Por ahora, mostramos parámetros genéricos
+        $('#parameters-section').show();
+        $('#parameters-container').html(`
+            <div class="form-group">
+                <label>Short Window</label>
+                <input type="number" name="param_short_window" class="form-control" value="20">
+            </div>
+            <div class="form-group">
+                <label>Long Window</label>
+                <input type="number" name="param_long_window" class="form-control" value="50">
+            </div>
+        `);
+    } else {
+        $('#parameters-section').hide();
+    }
+});
+</script>
+{% endblock %}

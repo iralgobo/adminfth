@@ -72,11 +72,15 @@ INSTALLED_APPS = [
     "django_extensions",
     # Tracking
     "apps.tracking",
+    "apps.strategies",
+    "apps.backtester",
     "django_celery_beat",
     'django_celery_results',
+    "debug_toolbar",
 ]
 
 MIDDLEWARE = [
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -221,3 +225,8 @@ CELERY_ENABLE_UTC = True
 # Configuración para tareas periódicas
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 CELERY_RESULT_BACKEND = 'django-db'
+
+INTERNAL_IPS = [
+        '127.0.0.1',
+        'localhost',
+    ]
