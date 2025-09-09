@@ -33,7 +33,7 @@ class SimpleBacktester:
     def get_historical_data(self):
         return Candle.objects.filter(
             tracking_configuration=self.config.tracking_config,
-            #time__range=(self.config.start_date, self.config.end_date)
+            time__range=(self.config.start_date, self.config.end_date)
         ).order_by('time')
     
     def execute_simulation(self, data):

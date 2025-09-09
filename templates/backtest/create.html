@@ -92,12 +92,13 @@
   </div>
 {% endblock %}
 
-{% block extra_js %}
+{% block extra_scripts %}
 <script>
 // Actualizar parámetros cuando se selecciona una estrategia
 $('select[name="strategy"]').change(function() {
     const strategyId = $(this).val();
     if (strategyId) {
+      
         // Aquí cargarías los parámetros específicos de la estrategia via AJAX
         // Por ahora, mostramos parámetros genéricos
         $('#parameters-section').show();

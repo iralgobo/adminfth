@@ -15,12 +15,12 @@ class MovingAverageCrossover(BaseStrategy):
     def generate_signals(self, data):
         
        
+       
+        short = int(self.parameters.get('short_window', '20'))
+        long = int(self.parameters.get('long_window', '50'))
         
-        short = self.parameters.get('short_window', 20)
-        long = self.parameters.get('long_window', 50)
-        
-        data['sma_short'] = data['close'].rolling(window=short).mean()
-        data['sma_long'] = data['close'].rolling(window=long).mean()
+        data['sma_short'] = talib.SMA(data['close'], timeperiod=short)
+        data['sma_long'] = talib.SMA(data['close'], timeperiod=long)
         
         data['signal'] = 0
         data['signal'] = (data['sma_short'] > data['sma_long']).astype(int)

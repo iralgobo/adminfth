@@ -1,5 +1,6 @@
 from django.db import models
 from config.models import TimeStampedModel
+from apps.strategies import get_available_strategies
 
 class Strategy(TimeStampedModel):
     STRATEGY_CHOICES = [
@@ -18,7 +19,7 @@ class Strategy(TimeStampedModel):
     
     def save(self, *args, **kwargs):
         # Actualizar las choices disponibles dinámicamente
-        from strategies import get_available_strategies
+        
         self._meta.get_field('strategy_type').choices = [
             (strategy, strategy.replace('_', ' ').title()) 
             for strategy in get_available_strategies()
