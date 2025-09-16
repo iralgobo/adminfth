@@ -123,6 +123,7 @@
                             <td>${{ trade.price|floatformat:4 }}</td>
                             <td>{{ trade.quantity|floatformat:6 }}</td>
                             <td>${{ trade.balance_after|floatformat:2 }}</td>
+                            <td>${{ trade.|floatformat:2 }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>

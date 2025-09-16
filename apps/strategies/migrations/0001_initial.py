@@ -4,24 +4,41 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Strategy',
+            name="Strategy",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('strategy_type', models.CharField(choices=[('moving_average_crossover', 'Moving Average Crossover'), ('rsi_overbought_oversold', 'RSI Overbought/Oversold'), ('macd_crossover', 'MACD Crossover'), ('bollinger_bands', 'Bollinger Bands')], max_length=50)),
-                ('parameters', models.JSONField(default=dict)),
-                ('description', models.TextField(blank=True)),
-                ('is_active', models.BooleanField(default=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                (
+                    "strategy_type",
+                    models.CharField(
+                        choices=[
+                            ("moving_average_crossover", "Moving Average Crossover"),
+                            ("rsi_overbought_oversold", "RSI Overbought/Oversold"),
+                            ("macd_crossover", "MACD Crossover"),
+                            ("bollinger_bands", "Bollinger Bands"),
+                        ],
+                        max_length=50,
+                    ),
+                ),
+                ("parameters", models.JSONField(default=dict)),
+                ("description", models.TextField(blank=True)),
+                ("is_active", models.BooleanField(default=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
             ],
         ),
     ]

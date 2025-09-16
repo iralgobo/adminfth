@@ -2,6 +2,7 @@ from django.db import models
 
 from config.models import TimeStampedModel
 
+
 # Create your models here.
 class TrackingConfiguration(TimeStampedModel):
     """

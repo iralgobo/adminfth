@@ -4,15 +4,17 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('strategies', '0001_initial'),
+        ("strategies", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='strategy',
-            name='strategy_type',
-            field=models.CharField(choices=[('moving_average_crossover', 'Moving Average Crossover')], max_length=50),
+            model_name="strategy",
+            name="strategy_type",
+            field=models.CharField(
+                choices=[("moving_average_crossover", "Moving Average Crossover")],
+                max_length=50,
+            ),
         ),
     ]

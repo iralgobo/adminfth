@@ -28,5 +28,4 @@ urlpatterns = [
     path("charts/", include("apps.charts.urls")),
     path("admin/", admin.site.urls),
     path("", include("admin_adminlte.urls")),
-    
 ]

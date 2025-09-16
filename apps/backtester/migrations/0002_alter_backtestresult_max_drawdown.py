@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('backtester', '0001_initial'),
+        ("backtester", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='backtestresult',
-            name='max_drawdown',
+            model_name="backtestresult",
+            name="max_drawdown",
             field=models.DecimalField(decimal_places=2, default=0.0, max_digits=10),
         ),
     ]

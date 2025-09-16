@@ -70,10 +70,31 @@
                         </div>
                     </div>
 
-                    <div id="parameters-section" style="display: none;">
-                        <h4>Parámetros de la Estrategia</h4>
-                        <div id="parameters-container"></div>
+                    <div id="parameters-section" >
+                    <h4>Parámetros de la Estrategia</h4>
+                    <div class="form-group">
+                        <label>Short Window</label>
+                        <input type="number" name="param_short_window" class="form-control" value="20">
                     </div>
+                    <div class="form-group">
+                        <label>Long Window</label>
+                        <input type="number" name="param_long_window" class="form-control" value="50">
+                    </div>
+                    
+                    <h5>Gestión de Riesgos</h5>
+                    <div class="form-group">
+                        <label>Stop Loss (%)</label>
+                        <input type="number" name="param_stop_loss" class="form-control" value="0.02" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label>Take Profit (%)</label>
+                        <input type="number" name="param_take_profit" class="form-control" value="0.04" step="0.01">
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" name="param_trailing" class="form-check-input" id="trailingStop">
+                        <label class="form-check-label" for="trailingStop">Trailing Stop</label>
+                    </div>
+                </div>
                 </div>
                 <div class="card-footer">
                     <button type="submit" class="btn btn-primary">
@@ -92,29 +113,3 @@
   </div>
 {% endblock %}
 
-{% block extra_scripts %}
-<script>
-// Actualizar parámetros cuando se selecciona una estrategia
-$('select[name="strategy"]').change(function() {
-    const strategyId = $(this).val();
-    if (strategyId) {
-      
-        // Aquí cargarías los parámetros específicos de la estrategia via AJAX
-        // Por ahora, mostramos parámetros genéricos
-        $('#parameters-section').show();
-        $('#parameters-container').html(`
-            <div class="form-group">
-                <label>Short Window</label>
-                <input type="number" name="param_short_window" class="form-control" value="20">
-            </div>
-            <div class="form-group">
-                <label>Long Window</label>
-                <input type="number" name="param_long_window" class="form-control" value="50">
-            </div>
-        `);
-    } else {
-        $('#parameters-section').hide();
-    }
-});
-</script>
-{% endblock %}

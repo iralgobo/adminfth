@@ -75,7 +75,7 @@ INSTALLED_APPS = [
     "apps.strategies",
     "apps.backtester",
     "django_celery_beat",
-    'django_celery_results',
+    "django_celery_results",
     "debug_toolbar",
 ]
 
@@ -224,9 +224,9 @@ CELERY_ENABLE_UTC = True
 
 # Configuración para tareas periódicas
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
-CELERY_RESULT_BACKEND = 'django-db'
+CELERY_RESULT_BACKEND = "django-db"
 
 INTERNAL_IPS = [
-        '127.0.0.1',
-        'localhost',
-    ]
+    "127.0.0.1",
+    "localhost",
+]

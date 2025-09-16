@@ -5,49 +5,102 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('strategies', '0001_initial'),
-        ('tracking', '0002_candle_created_at_candle_updated_at_and_more'),
+        ("strategies", "0001_initial"),
+        ("tracking", "0002_candle_created_at_candle_updated_at_and_more"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='BacktestConfig',
+            name="BacktestConfig",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('initial_balance', models.DecimalField(decimal_places=8, default=1000.0, max_digits=20)),
-                ('start_date', models.DateTimeField()),
-                ('end_date', models.DateTimeField()),
-                ('parameters', models.JSONField(default=dict)),
-                ('status', models.CharField(choices=[('pending', 'Pending'), ('running', 'Running'), ('completed', 'Completed'), ('failed', 'Failed')], default='pending', max_length=20)),
-                ('strategy', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='strategies.strategy')),
-                ('tracking_config', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tracking.trackingconfiguration')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "initial_balance",
+                    models.DecimalField(
+                        decimal_places=8, default=1000.0, max_digits=20
+                    ),
+                ),
+                ("start_date", models.DateTimeField()),
+                ("end_date", models.DateTimeField()),
+                ("parameters", models.JSONField(default=dict)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("pending", "Pending"),
+                            ("running", "Running"),
+                            ("completed", "Completed"),
+                            ("failed", "Failed"),
+                        ],
+                        default="pending",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "strategy",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="strategies.strategy",
+                    ),
+                ),
+                (
+                    "tracking_config",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="tracking.trackingconfiguration",
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='BacktestResult',
+            name="BacktestResult",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('final_balance', models.DecimalField(decimal_places=8, max_digits=20)),
-                ('total_return', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('total_trades', models.IntegerField()),
-                ('sharpe_ratio', models.DecimalField(decimal_places=4, max_digits=10, null=True)),
-                ('max_drawdown', models.DecimalField(decimal_places=2, max_digits=10)),
-                ('trades_data', models.JSONField(default=list)),
-                ('config', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='backtester.backtestconfig')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("final_balance", models.DecimalField(decimal_places=8, max_digits=20)),
+                ("total_return", models.DecimalField(decimal_places=2, max_digits=10)),
+                ("total_trades", models.IntegerField()),
+                (
+                    "sharpe_ratio",
+                    models.DecimalField(decimal_places=4, max_digits=10, null=True),
+                ),
+                ("max_drawdown", models.DecimalField(decimal_places=2, max_digits=10)),
+                ("trades_data", models.JSONField(default=list)),
+                (
+                    "config",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="backtester.backtestconfig",
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
     ]
