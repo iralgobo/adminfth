@@ -9,6 +9,8 @@ from apps.tracking.models import TrackingConfiguration
 from apps.strategies.models import Strategy
 import json
 from .spot_risk_backtester import SpotRiskBacktester
+from .factory import create_backtester
+
 
 
 def convert_timestamps_in_trades(trades_list):
@@ -26,7 +28,7 @@ def convert_timestamps_in_trades(trades_list):
 
 class BacktestListView(LoginRequiredMixin, View):
     def get(self, request):
-        backtests = BacktestConfig.objects.all().order_by("-created_at")
+        backtests = BacktestConfig.objects.all().order_by("-id")
         return render(
             request,
             "backtest/list.html",
@@ -38,6 +40,12 @@ class BacktestCreateView(LoginRequiredMixin, View):
     def get(self, request):
         strategies = Strategy.objects.filter(is_active=True)
         tracking_configs = TrackingConfiguration.objects.all()
+        testers = [
+            {"id":'spot_simple', "name":"Simple Spot Backtester"},
+            {"id":'spot_risk', "name":"Spot Risk Backtester"},
+            {"id":'futures_simple', "name":"Futures Simple Backtester"},
+            {"id":'futures_risk', "name":"Futures Risk Backtester"},
+            ]
 
         return render(
             request,
@@ -46,6 +54,7 @@ class BacktestCreateView(LoginRequiredMixin, View):
                 "strategies": strategies,
                 "tracking_configs": tracking_configs,
                 "page_title": "Nuevo Backtest",
+                "testers":testers,
             },
         )
 
@@ -56,6 +65,7 @@ class BacktestCreateView(LoginRequiredMixin, View):
             initial_balance = request.POST.get("initial_balance", 1000.0)
             start_date = request.POST.get("start_date")
             end_date = request.POST.get("end_date")
+            backtester_type=request.POST.get('backtester_type', 'spot_simple')
 
             # Parse parameters from form
             parameters = {
@@ -74,11 +84,19 @@ class BacktestCreateView(LoginRequiredMixin, View):
                     start_date=start_date,
                     end_date=end_date,
                     parameters=parameters,
+                    backtester_type=backtester_type
                 )
 
                 # Ejecutar backtest sincrónicamente
-                # backtester = SimpleBacktester(backtest)
-                backtester = SpotRiskBacktester(backtest)
+                #if  tester == 'SpotSimpleBacktester':
+                   # backtester = SimpleBacktester(backtest)
+                #elif tester == 'SpotRiskBacktester':
+                  #  backtester = SpotRiskBacktester(backtest)
+
+
+                backtester = create_backtester(backtest)
+                results = backtester.run()
+                
                 results = backtester.run()
 
                 # Guardar resultados

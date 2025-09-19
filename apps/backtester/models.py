@@ -15,6 +15,7 @@ class BacktestConfig(TimeStampedModel):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     parameters = models.JSONField(default=dict)
+    backtester_type = models.CharField(max_length=20, default="spot_simple")
     status = models.CharField(
         max_length=20,
         default="pending",

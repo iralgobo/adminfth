@@ -8,7 +8,7 @@ class SpotSimpleBacktester(BaseBacktester):
         self.position = 0  # Cantidad de crypto holdeda
 
     def execute_simulation(self, signals):
-        for signal in signals:
+        for _, signal in signals.iterrows():
             price = signal["close"]
 
             # Lógica básica de compra/venta
