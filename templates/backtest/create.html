@@ -33,6 +33,15 @@
                             {% endfor %}
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label>Tester</label>
+                        <select name="backtester_type" class="form-control" required>
+                            <option value="">Seleccionar Tester</option>
+                            {% for tester in testers %}
+                            <option value="{{ tester.id }}">{{ tester.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
                     <div class="form-group">
                         <label>Par y Timeframe</label>

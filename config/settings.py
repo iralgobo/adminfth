@@ -117,6 +117,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+
 DB_ENGINE = os.getenv("DB_ENGINE", None)
 DB_USERNAME = os.getenv("DB_USERNAME", None)
 DB_PASS = os.getenv("DB_PASS", None)
