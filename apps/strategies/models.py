@@ -6,6 +6,7 @@ from apps.strategies import get_available_strategies
 class Strategy(TimeStampedModel):
     STRATEGY_CHOICES = [
         ("moving_average_crossover", "Moving Average Crossover"),
+        ("moving_average_crossover_rsi", "Moving Average Crossover + RSI"),
         # Añadir más estrategias aquí según se vayan registrando
     ]
 

@@ -21,6 +21,7 @@ import debug_toolbar
 urlpatterns = [
     path("__debug__/", include(debug_toolbar.urls)),
     path("backtester/", include("apps.backtester.urls")),
+    path("sterategies/", include("apps.strategies.urls")),
     path("", include("apps.tracking.urls")),
     path("", include("apps.pages.urls")),
     path("", include("apps.dyn_dt.urls")),

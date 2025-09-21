@@ -1,3 +1,4 @@
+
 STRATEGY_REGISTRY = {}
 
 
@@ -24,6 +25,9 @@ def get_available_strategies():
 # Importar y registrar estrategias automáticamente
 try:
     from apps.strategies.ma_crossover import MovingAverageCrossover
+    from apps.strategies.ma_crossover_rsi import MovingAverageCrossoverRSI
     # Las estrategias se registran automáticamente con el decorador
 except ImportError as e:
     print(f"Error importing strategies: {e}")
+
+

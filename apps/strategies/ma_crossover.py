@@ -14,6 +14,14 @@ pd.set_option("display.width", None)  # Sin truncamiento horizontal
 
 @register_strategy("moving_average_crossover")
 class MovingAverageCrossover(BaseStrategy):
+    def get_parameters_schema(self):
+        parameters = self._get_parameters_schema_template()
+        parameters["properties"] = {
+            "short_window": {"type": "integer", "default": 20},
+            "long_window": {"type": "integer", "default": 50},
+        }
+        return parameters
+
     def generate_signals(self, data: pd.DataFrame):
         short = int(self.parameters.get("short_window", "20"))
         long = int(self.parameters.get("long_window", "50"))
@@ -24,5 +32,6 @@ class MovingAverageCrossover(BaseStrategy):
         data["signal"] = 0
         data["signal"] = (data["sma_short"] > data["sma_long"]).astype(int)
         data["position"] = data["signal"].diff()
+        #data["position"] = data["signal"].replace(to_replace=0, method="ffill").fillna(0)
 
         return data

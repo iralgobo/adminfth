@@ -1,10 +1,21 @@
 from abc import ABC, abstractmethod
 import pandas as pd
 
-
 class BaseStrategy(ABC):
     def __init__(self, parameters=None):
         self.parameters = parameters or {}
+
+    
+    def _get_parameters_schema_template(self):
+        return  {
+            "type": "object",
+            "title": "Parámetros de estrategia",
+            "properties": {}
+        }
+    
+    @abstractmethod
+    def get_parameters_schema(self):
+        pass
 
     @abstractmethod
     def generate_signals(self, data):

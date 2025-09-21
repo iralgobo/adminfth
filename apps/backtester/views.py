@@ -1,17 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse
 from django.db import transaction
 from .models import BacktestConfig, BacktestResult
-from .engine import SimpleBacktester
 from apps.tracking.models import TrackingConfiguration
 from apps.strategies.models import Strategy
 import json
-from .spot_risk_backtester import SpotRiskBacktester
 from .factory import create_backtester
-
-
+from .forms import BacktestForm
+from django_jsonform.widgets import JSONFormWidget
+from apps.strategies import get_strategy_class
 
 def convert_timestamps_in_trades(trades_list):
     """Convierte todos los Timestamps en la lista de trades a strings"""
@@ -38,80 +36,80 @@ class BacktestListView(LoginRequiredMixin, View):
 
 class BacktestCreateView(LoginRequiredMixin, View):
     def get(self, request):
-        strategies = Strategy.objects.filter(is_active=True)
-        tracking_configs = TrackingConfiguration.objects.all()
-        testers = [
-            {"id":'spot_simple', "name":"Simple Spot Backtester"},
-            {"id":'spot_risk', "name":"Spot Risk Backtester"},
-            {"id":'futures_simple', "name":"Futures Simple Backtester"},
-            {"id":'futures_risk', "name":"Futures Risk Backtester"},
-            ]
+        schema_parametros = {
+            "type": "object",
+            "title": "Parámetros de estrategia",
+            "properties": {}
+        }
+        form = BacktestForm(request.POST or None, initial={'parametros': {'short_window': 9, 'long_window': 21}})
+        form.fields['parametros'].widget = JSONFormWidget(schema=schema_parametros)
 
         return render(
             request,
             "backtest/create.html",
             {
-                "strategies": strategies,
-                "tracking_configs": tracking_configs,
-                "page_title": "Nuevo Backtest",
-                "testers":testers,
+                "form": form,
             },
         )
 
     def post(self, request):
         try:
+            form = BacktestForm(request.POST)
+           
             strategy_id = request.POST.get("strategy")
-            tracking_config_id = request.POST.get("tracking_config")
-            initial_balance = request.POST.get("initial_balance", 1000.0)
-            start_date = request.POST.get("start_date")
-            end_date = request.POST.get("end_date")
-            backtester_type=request.POST.get('backtester_type', 'spot_simple')
 
-            # Parse parameters from form
-            parameters = {
-                "short_window": int(request.POST.get("param_short_window", 20)),
-                "long_window": int(request.POST.get("param_long_window", 50)),
-                "stop_loss_pct": float(request.POST.get("param_stop_loss", 0.02)),
-                "take_profit_pct": float(request.POST.get("param_take_profit", 0.04)),
-                "trailing_stop": bool(request.POST.get("param_trailing", False)),
-            }
-
-            with transaction.atomic():
-                backtest = BacktestConfig.objects.create(
-                    strategy_id=strategy_id,
-                    tracking_config_id=tracking_config_id,
-                    initial_balance=initial_balance,
-                    start_date=start_date,
-                    end_date=end_date,
-                    parameters=parameters,
-                    backtester_type=backtester_type
-                )
-
-                # Ejecutar backtest sincrónicamente
-                #if  tester == 'SpotSimpleBacktester':
-                   # backtester = SimpleBacktester(backtest)
-                #elif tester == 'SpotRiskBacktester':
-                  #  backtester = SpotRiskBacktester(backtest)
-
-
-                backtester = create_backtester(backtest)
-                results = backtester.run()
+            strategy_instance = Strategy.objects.filter(id=strategy_id).first()
+            strategy_class = get_strategy_class(strategy_instance.strategy_type)
+            strategy = strategy_class()
+         
+            form.fields['parametros'].widget = JSONFormWidget(schema= strategy.get_parameters_schema())
+            if  form.is_valid():
                 
-                results = backtester.run()
+                tracking_config_id = form.cleaned_data["tracking_config"]    
+                initial_balance = form.cleaned_data["initial_balance"]
+                start_date = form.cleaned_data["start_date"]
+                end_date = form.cleaned_data["end_date"]
+                backtester_type = form.cleaned_data["backtester_type"]
+                parameters = form.cleaned_data["parametros"]
 
-                # Guardar resultados
-                BacktestResult.objects.create(
-                    config=backtest,
-                    final_balance=results["final_balance"],
-                    total_return=results["total_return"],
-                    total_trades=results["total_trades"],
-                    trades_data=convert_timestamps_in_trades(results["trades_data"]),
-                )
+                # Parse parameters from form
+               
 
-                backtest.status = "completed"
-                backtest.save()
+                with transaction.atomic():
+                    backtest = BacktestConfig.objects.create(
+                        strategy_id=strategy_id,
+                        tracking_config_id=tracking_config_id,
+                        initial_balance=initial_balance,
+                        start_date=start_date,
+                        end_date=end_date,
+                        parameters=parameters,
+                        backtester_type=backtester_type
+                    )
 
-            return redirect("backtest_detail", backtest_id=backtest.id)
+                    # Ejecutar backtest sincrónicamente
+                    #if  tester == 'SpotSimpleBacktester':
+                    # backtester = SimpleBacktester(backtest)
+                    #elif tester == 'SpotRiskBacktester':
+                    #  backtester = SpotRiskBacktester(backtest)
+
+
+                    backtester = create_backtester(backtest)
+                    results = backtester.run()
+                    
+
+                    # Guardar resultados
+                    BacktestResult.objects.create(
+                        config=backtest,
+                        final_balance=results["final_balance"],
+                        total_return=results["total_return"],
+                        total_trades=results["total_trades"],
+                        trades_data=convert_timestamps_in_trades(results["trades_data"]),
+                    )
+
+                    backtest.status = "completed"
+                    backtest.save()
+
+                return redirect("backtest_detail", backtest_id=backtest.id)
 
         except Exception as e:
             return render(
@@ -124,7 +122,11 @@ class BacktestCreateView(LoginRequiredMixin, View):
                     "page_title": "Nuevo Backtest",
                 },
             )
+        
 
+
+
+    
 
 class BacktestDetailView(LoginRequiredMixin, View):
     def get(self, request, backtest_id):

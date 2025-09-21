@@ -1,124 +1,70 @@
 {% extends 'layouts/base.html' %}
+{% load static %}
 
 {% block title %}Nuevo Backtest - Trading System{% endblock %}
 {% block page_title %}Nuevo Backtest{% endblock %}
 
 {% block content %}
-  <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-      <div class="container-fluid">
-<div class="row">
-    <div class="col-md-8">
-        <div class="card card-primary">
+<div class="content-wrapper">
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-8">
+          <div class="card card-primary">
             <div class="card-header">
-                <h3 class="card-title">Configuración del Backtest</h3>
+              <h3 class="card-title">Configuración del Backtest</h3>
             </div>
             <form method="post">
-                {% csrf_token %}
-                <div class="card-body">
-                    {% if error %}
-                    <div class="alert alert-danger">
-                        <i class="icon fas fa-exclamation-triangle"></i>
-                        {{ error }}
-                    </div>
-                    {% endif %}
+              {% csrf_token %}
+              <div class="card-body">
+                {% if form.errors %}
+                  <div class="alert alert-danger">
+                    <i class="icon fas fa-exclamation-triangle"></i>
+                    Corrige los errores en el formulario.
+                  </div>
+                {% endif %}
+                 {{ form.media }}  {# 👈 Esto carga el JS/CSS del editor #}
+    
+                {{ form.strategy.label_tag }} 
+                {{ form.strategy }}
 
-                    <div class="form-group">
-                        <label>Estrategia</label>
-                        <select name="strategy" class="form-control" required>
-                            <option value="">Seleccionar estrategia</option>
-                            {% for strategy in strategies %}
-                            <option value="{{ strategy.id }}">{{ strategy.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Tester</label>
-                        <select name="backtester_type" class="form-control" required>
-                            <option value="">Seleccionar Tester</option>
-                            {% for tester in testers %}
-                            <option value="{{ tester.id }}">{{ tester.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
+                {{ form.backtester_type.label_tag }}
+                {{ form.backtester_type }}
 
-                    <div class="form-group">
-                        <label>Par y Timeframe</label>
-                        <select name="tracking_config" class="form-control" required>
-                            <option value="">Seleccionar par</option>
-                            {% for config in tracking_configs %}
-                            <option value="{{ config.id }}">
-                                {{ config.par }} - {{ config.timeframe }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
+                {{ form.tracking_config.label_tag }}
+                {{ form.tracking_config }}
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Balance Inicial (USDT)</label>
-                                <input type="number" name="initial_balance" class="form-control" value="1000" step="0.01" required>
-                            </div>
-                        </div>
-                    </div>
+                {{ form.initial_balance.label_tag }}
+                {{ form.initial_balance }}
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Fecha Inicio</label>
-                                <input type="date" name="start_date" class="form-control" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Fecha Fin</label>
-                                <input type="date" name="end_date" class="form-control" required>
-                            </div>
-                        </div>
-                    </div>
+                {{ form.start_date.label_tag }}
+                {{ form.start_date }}
 
-                    <div id="parameters-section" >
-                    <h4>Parámetros de la Estrategia</h4>
-                    <div class="form-group">
-                        <label>Short Window</label>
-                        <input type="number" name="param_short_window" class="form-control" value="20">
-                    </div>
-                    <div class="form-group">
-                        <label>Long Window</label>
-                        <input type="number" name="param_long_window" class="form-control" value="50">
-                    </div>
-                    
-                    <h5>Gestión de Riesgos</h5>
-                    <div class="form-group">
-                        <label>Stop Loss (%)</label>
-                        <input type="number" name="param_stop_loss" class="form-control" value="0.02" step="0.01">
-                    </div>
-                    <div class="form-group">
-                        <label>Take Profit (%)</label>
-                        <input type="number" name="param_take_profit" class="form-control" value="0.04" step="0.01">
-                    </div>
-                    <div class="form-check">
-                        <input type="checkbox" name="param_trailing" class="form-check-input" id="trailingStop">
-                        <label class="form-check-label" for="trailingStop">Trailing Stop</label>
-                    </div>
-                </div>
-                </div>
-                <div class="card-footer">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-play"></i> Ejecutar Backtest
-                    </button>
-                    <a href="{% url 'backtest_list' %}" class="btn btn-default">Cancelar</a>
-                </div>
+                {{ form.end_date.label_tag }}
+                {{ form.end_date }}
+
+                {{ form.parametros.label_tag }}
+                {{ form.parametros }}
+              </div>
+              <div class="card-footer">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-play"></i> Ejecutar Backtest
+                </button>
+                <a href="{% url 'backtest_list' %}" class="btn btn-default">Cancelar</a>
+              </div>
             </form>
+          </div>
         </div>
+      </div>
     </div>
+  </section>
 </div>
-  </div>
-      <!-- /.container-fluid -->
-    </section>
-    <!-- /.content -->
-  </div>
 {% endblock %}
-
+{% block extra_scripts %}
+<script> 
+const getStrategySchemaUrl = (strategyId) => {
+    return `{% url 'get_strategy_schema' 0 %}`.replace('0', strategyId);
+};
+</script>
+<script src="{% static 'js/backtester-create-view.js' %}"></script>
+{% endblock extra_scripts %}
