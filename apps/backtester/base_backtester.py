@@ -7,8 +7,16 @@ from apps.tracking.models import Candle
 class BaseBacktester(ABC):
     def __init__(self, backtest_config):
         self.config = backtest_config
-        self.initial_balance = float(backtest_config.initial_balance)
-        self.balance = self.initial_balance
+        
+        if isinstance(backtest_config, dict):
+            if "initial_balance" in backtest_config:
+                self.initial_balance = float(backtest_config.initial_balance)
+                self.balance = self.initial_balance
+        else:
+            self.initial_balance = float(backtest_config.initial_balance)
+            self.balance = self.initial_balance
+
+       
         self.trades = []
         self.equity_curve = []
 
@@ -43,6 +51,10 @@ class BaseBacktester(ABC):
         """Calcular resultados - debe ser implementado por subclases"""
         pass
 
+    @abstractmethod
+    def get_parameters_schema(self):
+        pass
+
     def record_trade(self, trade_info):
         """Registrar trade de forma estandarizada"""
         self.trades.append(trade_info)
@@ -59,4 +71,11 @@ class BaseBacktester(ABC):
             "total_return": total_return,
             "total_trades": len(self.trades),
             "trades_data": self.trades,
+        }
+    
+    def _get_parameters_schema_template(self):
+        return  {
+            "type": "object",
+            "title": "Parámetros de backtester",
+            "properties": {}
         }

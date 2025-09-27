@@ -55,8 +55,8 @@ class SpotRiskBacktester(SpotSimpleBacktester):
 
     def setup_risk_management(self, entry_price):
         """Configurar parámetros de riesgo"""
-        stop_loss_pct = self.config.parameters.get("stop_loss_pct", 0.02)
-        take_profit_pct = self.config.parameters.get("take_profit_pct", 0.04)
+        stop_loss_pct = self.config.parameters.get("stop_loss_pct", 0.01)
+        take_profit_pct = self.config.parameters.get("take_profit_pct", 0.02)
         trailing_stop = self.config.parameters.get("trailing_stop", False)
 
         self.risk_manager = RiskManager(
@@ -102,3 +102,12 @@ class SpotRiskBacktester(SpotSimpleBacktester):
             self.position = 0
             self.risk_manager = None
             self.current_trade_info = None
+
+    def get_parameters_schema(self):
+        parameters = super().get_parameters_schema()
+        parameters["properties"]=  {
+            "stop_loss_pct": {"type": "number", "default": 0.01},
+            "take_profit_pct": {"type": "number", "default": 0.02},
+            "trailing_stop": {"type": "boolean", "default": False},
+        }
+        return parameters

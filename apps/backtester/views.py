@@ -10,6 +10,7 @@ from .factory import create_backtester
 from .forms import BacktestForm
 from django_jsonform.widgets import JSONFormWidget
 from apps.strategies import get_strategy_class
+from django.http import JsonResponse
 
 def convert_timestamps_in_trades(trades_list):
     """Convierte todos los Timestamps en la lista de trades a strings"""
@@ -41,7 +42,7 @@ class BacktestCreateView(LoginRequiredMixin, View):
             "title": "Parámetros de estrategia",
             "properties": {}
         }
-        form = BacktestForm(request.POST or None, initial={'parametros': {'short_window': 9, 'long_window': 21}})
+        form = BacktestForm(request.POST or None, initial={"parametros": {}})
         form.fields['parametros'].widget = JSONFormWidget(schema=schema_parametros)
 
         return render(
@@ -57,12 +58,15 @@ class BacktestCreateView(LoginRequiredMixin, View):
             form = BacktestForm(request.POST)
            
             strategy_id = request.POST.get("strategy")
+            backtester_type= request.POST.get("backtester_type")
 
-            strategy_instance = Strategy.objects.filter(id=strategy_id).first()
-            strategy_class = get_strategy_class(strategy_instance.strategy_type)
-            strategy = strategy_class()
+            #strategy_instance = Strategy.objects.filter(id=strategy_id).first()
+            #strategy_class = get_strategy_class(strategy_instance.strategy_type)
+            
+            #strategy = strategy_class()
          
-            form.fields['parametros'].widget = JSONFormWidget(schema= strategy.get_parameters_schema())
+            form_schema = get_property_schema(backtester_type, strategy_id)
+            form.fields['parametros'].widget = JSONFormWidget(schema= form_schema)
             if  form.is_valid():
                 
                 tracking_config_id = form.cleaned_data["tracking_config"]    
@@ -110,6 +114,18 @@ class BacktestCreateView(LoginRequiredMixin, View):
                     backtest.save()
 
                 return redirect("backtest_detail", backtest_id=backtest.id)
+            else:
+                # ⚠️ IMPORTANTE: Retornar respuesta cuando el formulario NO es válido
+                return render(
+                    request,
+                    "backtest/create.html",
+                    {
+                        "form": form,
+                        "strategies": Strategy.objects.filter(is_active=True),
+                        "tracking_configs": TrackingConfiguration.objects.all(),
+                        "page_title": "Nuevo Backtest",
+                    },
+                )
 
         except Exception as e:
             return render(
@@ -167,3 +183,49 @@ class BacktestDeleteView(LoginRequiredMixin, View):
         backtest = get_object_or_404(BacktestConfig, id=backtest_id)
         backtest.delete()
         return redirect("backtest_list")
+
+
+def get_property_schema_view(request, backtest_type, strategy_id):  # Ahora recibe strategy_id como parámetro
+ 
+    
+    schema = get_property_schema(backtest_type, strategy_id)
+    
+    return JsonResponse(schema)
+
+
+def get_property_schema( backtest_type, strategy_id):  # Ahora recibe strategy_id como parámetro
+
+    # Debug: verificar qué devuelven las funciones
+    strategy_schema = get_strategie_schema(strategy_id)
+    backtester_schema = get_backtester_schema(backtest_type)
+    
+    
+    schema = {
+        "type": "object",
+        "title": "Parametros",
+        "properties": {
+            "strategy": strategy_schema,
+            "backtester": backtester_schema
+        }
+    }
+    
+    return schema
+
+def get_strategie_schema(strategy_id):
+    strategy_instance = Strategy.objects.filter(id=strategy_id).first()
+    if not strategy_instance:
+        raise ValueError('Strategy not found')
+    
+    strategy_class = get_strategy_class(strategy_instance.strategy_type)
+    strategy = strategy_class()
+    
+    return strategy.get_parameters_schema()
+
+def get_backtester_schema( backtest_type):  
+
+    backtester = create_backtester({    
+        "backtester_type": backtest_type})
+    
+    return backtester.get_parameters_schema()
+
+    

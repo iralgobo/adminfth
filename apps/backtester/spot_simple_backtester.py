@@ -70,3 +70,7 @@ class SpotSimpleBacktester(BaseBacktester):
             "trades_data": self.trades,
             "open_position": self.position > 0,
         }
+    
+
+    def get_parameters_schema(self):
+        return self._get_parameters_schema_template()

@@ -12,4 +12,5 @@ urlpatterns = [
         views.BacktestDeleteView.as_view(),
         name="backtest_delete",
     ),
+    path("get-property-schema/<str:backtest_type>/<int:strategy_id>/", views.get_property_schema_view, name="get_property_schema"),
 ]

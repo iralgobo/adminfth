@@ -95,3 +95,11 @@ class FuturesSimpleBacktester(BaseBacktester):
     def calculate_results(self):
         # Para futuros, el balance ya incluye todas las PnL realizadas
         return self.calculate_basic_metrics()
+    
+    def get_parameters_schema(self):
+        parameters = self._get_parameters_schema_template()
+        parameters["properties"]=  {
+           'leverage': {'type': 'number', 'default': 1}
+        }
+        return parameters
+        
